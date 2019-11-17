@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
 
 /**
  * @author: yuanyou.
@@ -45,7 +46,7 @@ public class CodeConsumer extends AbstractSqlContextConsumer {
     protected String getFilePath(ClassInfo classInfo, Configuration configuration) {
         String pkg = classInfo.getPkg();
         if (pkg != null) {
-            pkg = pkg.replaceAll("\\.", File.separator) + File.separator;
+            pkg = pkg.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + File.separator;
         } else {
             pkg = "";
         }

@@ -64,6 +64,10 @@ public class Configuration {
 
     private String entityParentClass;
 
+    public void validate(){
+        // TODO: 2019/11/17 验证 @NotNull字段
+    }
+
     public Configuration addExcludeNode(String nodeType) {
         if (excludeNodes == null) {
             excludeNodes = new HashSet<>();
