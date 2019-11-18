@@ -2,16 +2,16 @@ package com.finalcola.sql.process.consumer;
 
 import com.finalcola.sql.config.Configuration;
 import com.finalcola.sql.process.SqlContext;
+import jdk.nashorn.internal.runtime.regexp.joni.constants.NodeType;
 import lombok.extern.slf4j.Slf4j;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
+import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -29,7 +29,6 @@ public class XmlNodeConsumer extends AbstractSqlContextConsumer {
         long startTime = System.currentTimeMillis();
         Document document = context.getNode().getDocument();
         String xml = printDom(document, false);
-//        xml = formatDom(xml);
         long endTime = System.currentTimeMillis();
         log.info("format xml of {} cost {}", context.getTableMeta().getTableName(), (endTime - startTime));
         writeToFile(xml, context);
@@ -63,12 +62,15 @@ public class XmlNodeConsumer extends AbstractSqlContextConsumer {
         OutputFormat format = OutputFormat.createPrettyPrint();
         format.setEncoding("UTF-8");
         if (pretty) {
+            format.setPadText(true);
+            format.setNewlines(true);
+            format.setNewLineAfterDeclaration(true);
             format.setIndent(true); //设置是否缩进
             format.setNewlines(true); //设置是否换行
         }
         StringWriter stringWriter = new StringWriter();
         XMLWriter xmlWriter = new XMLWriter(stringWriter, format);
-        xmlWriter.setEscapeText(false);
+//        xmlWriter.setEscapeText(false);
         try {
             xmlWriter.write(document);
             xmlWriter.flush();
@@ -82,16 +84,6 @@ public class XmlNodeConsumer extends AbstractSqlContextConsumer {
             }
         }
         return stringWriter.toString();
-    }
-
-    protected String formatDom(String xml) {
-        try {
-            Document document = DocumentHelper.parseText(xml);
-            return printDom(document, true);
-        } catch (DocumentException e) {
-            // should not happen
-            throw new RuntimeException("XML解析失败", e);
-        }
     }
 
     protected String getXmlDir(Configuration configuration) {
