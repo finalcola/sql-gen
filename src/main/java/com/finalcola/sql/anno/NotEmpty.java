@@ -7,14 +7,15 @@ import java.lang.annotation.Target;
 
 /**
  * @author: yuanyou.
- * @date: 2019-11-12 15:20
+ * @date: 2019-11-18 17:36
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @NeedCheck
-public @interface NotNull {
+public @interface NotEmpty {
 
     String message() default "";
 
-    Class<? extends Checker> checker() default NotNullChecker.class;
+    Class<? extends Checker> checker() default NotEmptyChecker.class;
+
 }

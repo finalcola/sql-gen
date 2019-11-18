@@ -2,6 +2,7 @@ package com.finalcola.sql.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.finalcola.sql.anno.NotNull;
+import com.finalcola.sql.anno.Validator;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -34,10 +35,10 @@ public class Configuration {
     @NotNull
     private String password;
 
-    @NotNull
+    @NotNull(message = "写入目录不能为空")
     private String dir;
 
-    @NotNull
+    @NotNull(message = "请指定packageName")
     private String packageName;
 
     private boolean supportLombok = true;
@@ -65,7 +66,7 @@ public class Configuration {
     private String entityParentClass;
 
     public void validate(){
-        // TODO: 2019/11/17 验证 @NotNull字段
+        Validator.passOrError(this);
     }
 
     public Configuration addExcludeNode(String nodeType) {
