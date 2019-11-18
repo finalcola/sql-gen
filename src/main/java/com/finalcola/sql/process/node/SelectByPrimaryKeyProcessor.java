@@ -24,6 +24,11 @@ public class SelectByPrimaryKeyProcessor extends AbstractNodeProcessor {
     }
 
     @Override
+    public int getOrder() {
+        return super.getOrder() + 5;
+    }
+
+    @Override
     protected SqlContext createSubSqlContext(SqlContext parentContext) {
         if (parentContext.getTableMeta().getPrimaryKeyMap().isEmpty()) {
             return null;

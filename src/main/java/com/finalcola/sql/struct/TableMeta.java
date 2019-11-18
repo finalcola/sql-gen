@@ -15,7 +15,7 @@ import java.util.*;
 public class TableMeta {
     private String tableName;
     // TODO: 2019-11-15 字段顺序
-    private Map<String, ColumnMeta> allColumns = new HashMap<String, ColumnMeta>();
+    private Map<String, ColumnMeta> allColumns = new LinkedHashMap<>();
     private Map<String, IndexMeta> allIndexes = new HashMap<String, IndexMeta>();
 
     /**
@@ -120,9 +120,9 @@ public class TableMeta {
         }
 
         // 主键个数错误
-        if (pk.size() > 1) {
-            throw new NotSupportYetException("Multi PK");
-        }
+//        if (pk.size() > 1) {
+//            throw new NotSupportYetException("Multi PK");
+//        }
 
         return pk;
     }

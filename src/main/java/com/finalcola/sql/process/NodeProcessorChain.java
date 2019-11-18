@@ -26,9 +26,9 @@ public class NodeProcessorChain implements Processor {
             return;
         }
         Set<String> excludeNodes = sqlContext.getConfiguration().getExcludeNodes();
-        Iterator<AbstractProcessor> iterator = nodeProcessors.iterator();
-        while (iterator.hasNext()) {
-            AbstractProcessor next = iterator.next();
+        PriorityQueue<AbstractProcessor> copy = new PriorityQueue<>(nodeProcessors);
+        while (!copy.isEmpty()) {
+            AbstractProcessor next = copy.poll();
             if (next == null || excludeNodes.contains(next.getType())) {
                 continue;
             }

@@ -60,6 +60,7 @@ public final class MysqlKeywordUtils {
         KEYWORDS.add("CONSTRAINT");
         KEYWORDS.add("CONTINUE");
         KEYWORDS.add("CONVERT");
+        KEYWORDS.add("COUNT");
         KEYWORDS.add("CREATE");
         KEYWORDS.add("CROSS");
         KEYWORDS.add("CURRENT_DATE");

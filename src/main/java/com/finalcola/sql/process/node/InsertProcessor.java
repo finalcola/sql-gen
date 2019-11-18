@@ -5,7 +5,6 @@ import com.finalcola.sql.process.AbstractNodeProcessor;
 import com.finalcola.sql.process.SqlContext;
 import com.finalcola.sql.struct.*;
 import com.finalcola.sql.util.MysqlKeywordUtils;
-import com.finalcola.sql.util.StringUtils;
 import lombok.EqualsAndHashCode;
 import org.dom4j.Element;
 
@@ -22,6 +21,11 @@ public class InsertProcessor extends AbstractNodeProcessor {
     @Override
     public String getType() {
         return "insert";
+    }
+
+    @Override
+    public int getOrder() {
+        return super.getOrder() + 1;
     }
 
     @Override
@@ -48,7 +52,7 @@ public class InsertProcessor extends AbstractNodeProcessor {
             element.addAttribute("keyProperty", primartKey);
         }
 
-        element.addText(createInsertSql(tableMeta, parentContext.getConfiguration()));
+        addInsertSql(tableMeta, parentContext.getConfiguration(), element);
         return element;
     }
 
@@ -56,11 +60,10 @@ public class InsertProcessor extends AbstractNodeProcessor {
         return "insert";
     }
 
-    protected String createInsertSql(TableMeta tableMeta, Configuration configuration) {
+    protected void addInsertSql(TableMeta tableMeta, Configuration configuration, Element element) {
         String tableName = MysqlKeywordUtils.processKeyword(tableMeta.getTableName());
         Map<String, ColumnMeta> primaryKeyMap = tableMeta.getPrimaryKeyMap();
         Map<String, ColumnMeta> allColumns = tableMeta.getAllColumns();
-        int primaryKeySize = primaryKeyMap.size();
 
         StringBuilder fieldsBuilder = new StringBuilder();
         StringBuilder paramsBuilder = new StringBuilder();
@@ -83,7 +86,7 @@ public class InsertProcessor extends AbstractNodeProcessor {
 
         String sqlFormat = "insert into (%s) %s values (%s)";
         String sql = String.format(sqlFormat, fieldsBuilder.toString(), tableName, paramsBuilder.toString());
-        return sql;
+        element.addText(sql);
     }
 
 

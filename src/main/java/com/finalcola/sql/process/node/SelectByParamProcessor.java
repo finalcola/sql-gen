@@ -23,6 +23,11 @@ public class SelectByParamProcessor extends SelectByPrimaryKeyProcessor {
     }
 
     @Override
+    public int getOrder() {
+        return super.getOrder() + 6;
+    }
+
+    @Override
     protected boolean support(SqlContext sqlContext) {
         Map<String, ColumnMeta> columnsExcludePk = sqlContext.getTableMeta().getColumnsExcludePk();
         return columnsExcludePk.size() > 0;

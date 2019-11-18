@@ -26,6 +26,11 @@ public class DeleteProcessor extends AbstractNodeProcessor {
     }
 
     @Override
+    public int getOrder() {
+        return super.getOrder() + 3;
+    }
+
+    @Override
     protected SqlContext createSubSqlContext(SqlContext parentContext) {
         if (parentContext.getTableMeta().getPrimaryKeyMap().isEmpty()) {
             return null;

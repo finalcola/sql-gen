@@ -4,8 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 /**
  * @author: yuanyou.
@@ -72,6 +76,7 @@ public class TableMetaCache {
         tm.setTableName(tableName);
 
         ResultSet rs1 = dbmd.getColumns(catalogName, schemaName, tableName, "%");
+        Map<String, ColumnMeta> allColumns = new HashMap<>(32);
         while (rs1.next()) {
             // 解析每个字段的元数据
             ColumnMeta col = new ColumnMeta();
@@ -94,7 +99,7 @@ public class TableMetaCache {
             col.setIsNullAble(rs1.getString("IS_NULLABLE"));
             col.setIsAutoincrement(rs1.getString("IS_AUTOINCREMENT"));
 
-            tm.getAllColumns().put(col.getColumnName(), col);
+            allColumns.put(col.getColumnName(), col);
         }
 
         // 解析索引信息
@@ -104,7 +109,7 @@ public class TableMetaCache {
             indexName = rs2.getString("INDEX_NAME");
             String colName = rs2.getString("COLUMN_NAME");
             // 上面解析的字段
-            ColumnMeta col = tm.getAllColumns().get(colName);
+            ColumnMeta col = allColumns.get(colName);
 
             if (tm.getAllIndexes().containsKey(indexName)) {
                 // 已有该索引，添加该字段
@@ -131,7 +136,6 @@ public class TableMetaCache {
                     index.setIndextype(IndexType.Normal);
                 }
                 tm.getAllIndexes().put(indexName, index);
-
             }
         }
         // 特殊DB的主键解析
@@ -147,7 +151,33 @@ public class TableMetaCache {
                 }
             }
         }
+        allColumns = sortColumns(allColumns, tm.getAllIndexes());
+        tm.getAllColumns().putAll(allColumns);
         return tm;
+    }
+
+    private static Map<String, ColumnMeta> sortColumns(Map<String, ColumnMeta> allColumns, Map<String, IndexMeta> allIndexes) {
+        HashMap<String, ColumnMeta> primaryKeys = new HashMap<>(allColumns.size() / 2);
+        HashMap<String, ColumnMeta> simpleColumns = new HashMap<>(allColumns.size());
+        for (IndexMeta indexMeta : allIndexes.values()) {
+            if (IndexType.PRIMARY.equals(indexMeta.getIndextype())) {
+                for (ColumnMeta columnMeta : indexMeta.getValues()) {
+                    primaryKeys.put(columnMeta.getColumnName(), columnMeta);
+                }
+            }
+        }
+
+        for (Map.Entry<String, ColumnMeta> entry : allColumns.entrySet()) {
+            if (primaryKeys.containsKey(entry.getKey())) {
+                continue;
+            }
+            simpleColumns.put(entry.getKey(), entry.getValue());
+        }
+
+        Map<String, ColumnMeta> result = new LinkedHashMap<>(allColumns.size(), 1.0F);
+        result.putAll(primaryKeys);
+        result.putAll(simpleColumns);
+        return result;
     }
 
 }

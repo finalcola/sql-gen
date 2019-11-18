@@ -1,7 +1,6 @@
 package com.finalcola.sql.process.node;
 
 import com.finalcola.sql.config.Configuration;
-import com.finalcola.sql.process.AbstractNodeProcessor;
 import com.finalcola.sql.process.SqlContext;
 import com.finalcola.sql.struct.*;
 import com.finalcola.sql.util.MysqlKeywordUtils;
@@ -24,12 +23,17 @@ public class InsertBatchProcessor extends InsertProcessor {
     }
 
     @Override
+    public int getOrder() {
+        return super.getOrder() + 2;
+    }
+
+    @Override
     protected String getSqlId() {
         return "insertBatch";
     }
 
     @Override
-    protected String createInsertSql(TableMeta tableMeta, Configuration configuration) {
+    protected void addInsertSql(TableMeta tableMeta, Configuration configuration, Element element) {
         String tableName = MysqlKeywordUtils.processKeyword(tableMeta.getTableName());
         Map<String, ColumnMeta> primaryKeyMap = tableMeta.getPrimaryKeyMap();
         Map<String, ColumnMeta> allColumns = tableMeta.getAllColumns();
@@ -53,8 +57,17 @@ public class InsertBatchProcessor extends InsertProcessor {
         deleteLastChar(fieldsBuilder);
         deleteLastChar(paramsBuilder);
 
-        String sqlFormat = "insert into (%s) %s values <foreach collection=\"list\" item=\"item\" separator=\",\">(%s)</foreach>";
-        return String.format(sqlFormat, fieldsBuilder.toString(), tableName, paramsBuilder.toString());
+        String sqlFormat = "insert into (%s) %s values ";
+        element.addText(String.format(sqlFormat, fieldsBuilder.toString(), tableName));
+
+        // <foreach collection="list" item="item" separator=",">(#{item)</foreach>
+        Element subNode = createElement("foreach");
+        subNode.addAttribute("collection", "list");
+        subNode.addAttribute("item", "item");
+        subNode.addAttribute("separator", ",");
+        subNode.addText("(#{item})");
+
+        element.add(subNode);
     }
 
     @Override
