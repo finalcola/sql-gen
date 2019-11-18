@@ -29,7 +29,7 @@ public class XmlNodeConsumer extends AbstractSqlContextConsumer {
         long startTime = System.currentTimeMillis();
         Document document = context.getNode().getDocument();
         String xml = printDom(document, false);
-        xml = formatDom(xml);
+//        xml = formatDom(xml);
         long endTime = System.currentTimeMillis();
         log.info("format xml of {} cost {}", context.getTableMeta().getTableName(), (endTime - startTime));
         writeToFile(xml, context);

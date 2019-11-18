@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author: yuanyou.
@@ -42,6 +43,11 @@ public class DeleteProcessor extends AbstractNodeProcessor {
         SqlContext sqlContext = new SqlContext();
         sqlContext.setNode(node);
         return sqlContext;
+    }
+
+    @Override
+    protected boolean support(SqlContext sqlContext) {
+        return super.support(sqlContext) && sqlContext.getTableMeta().getPrimaryKeyMap().size() > 0;
     }
 
     @Override
@@ -89,15 +95,14 @@ public class DeleteProcessor extends AbstractNodeProcessor {
         element.addAttribute("id", getId());
         TableMeta tableMeta = parentContext.getTableMeta();
         List<String> primaryKeyList = tableMeta.getPrimaryKeyOnlyName();
-        String conditionSql = primaryKeyList.stream()
-                .map(key -> getIfCondition(key, parentContext, "and ", ""))
-                .reduce((s1, s2) -> s1 + "," + s2)
-                .orElse("");
-        if (StringUtils.isBlank(conditionSql)) {
-            return null;
-        }
-        String whereSql = "delete from " + MysqlKeywordUtils.processKeyword(getTableName(parentContext)) + " <where>" + conditionSql + "</where>";
+        Element subNode = createElement("where");
+        primaryKeyList.stream()
+                .map(key -> getIfConditionNode(key, parentContext, "and ", ""))
+                .forEach(subNode::add);
+
+        String whereSql = "delete from " + MysqlKeywordUtils.processKeyword(getTableName(parentContext));
         element.addText(whereSql);
+        element.add(subNode);
         return element;
     }
 

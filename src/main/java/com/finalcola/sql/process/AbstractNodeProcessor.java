@@ -104,6 +104,23 @@ public abstract class AbstractNodeProcessor extends AbstractProcessor {
         return String.format(sqlFormat, fieldName, testAdditionalStr, prefix, MysqlKeywordUtils.processKeyword(column), fieldName, suffix);
     }
 
+    protected Element getIfConditionNode(String column, SqlContext sqlContext, String prefix, String suffix) {
+        ColumnMeta columnMeta = sqlContext.getTableMeta().getAllColumns().get(column);
+        String fieldName = columnToCamel(column, sqlContext.getConfiguration());
+        String dataTypeName = columnMeta.getDataTypeName();
+        String javaType = MysqlTypeMap.getJavaType(dataTypeName);
+        String testAdditionalStr = null;
+        if ("String".equalsIgnoreCase(javaType)) {
+            testAdditionalStr = " and " + fieldName + " != ''";
+        } else {
+            testAdditionalStr = "";
+        }
+        Element element = createElement("if");
+        element.addAttribute("test", String.format("%s != null%s", fieldName, testAdditionalStr));
+        element.addText(String.format("%s %s=#{%s}%s", prefix, MysqlKeywordUtils.processKeyword(column), fieldName, suffix));
+        return element;
+    }
+
     protected String getSimpleCondition(String column, SqlContext sqlContext, String prefix, String suffix) {
         String sqlFormat = " %s %s=#{%s} %s";
         return String.format(sqlFormat, prefix, MysqlKeywordUtils.processKeyword(column), columnToCamel(column, sqlContext.getConfiguration()), suffix);

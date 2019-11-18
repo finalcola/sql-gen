@@ -7,7 +7,9 @@ import com.finalcola.sql.util.MysqlKeywordUtils;
 import com.finalcola.sql.util.MysqlTypeMap;
 import com.finalcola.sql.util.StringUtils;
 import lombok.EqualsAndHashCode;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Node;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -52,64 +54,69 @@ public class SelectByPrimaryKeyProcessor extends AbstractNodeProcessor {
     protected Element createSelectByPrimaryKey(SqlContext parentContext) {
         Element element = createElement("select");
         element.addAttribute("id", getType());
-        String sqlFormat = "select %s from %s %s";
         String tableName = MysqlKeywordUtils.processKeyword(parentContext.getTableMeta().getTableName());
-        String sql = String.format(sqlFormat, getColumns(parentContext, element), tableName, getWhere(parentContext, element));
-        element.addText(sql);
+//        String sqlFormat = "select %s from %s %s";
+//        String sql = String.format(sqlFormat, getColumns(parentContext, element), tableName, getWhere(parentContext, element));
+//        element.addText(sql);
+        element.addText("select ");
+        addColumns(parentContext, element);
+        element.addText(" from " + tableName + " ");
+        addWhere(parentContext, element);
         return element;
     }
 
-    protected String getWhere(SqlContext context, Element element) {
+    protected void addWhere(SqlContext context, Element element) {
         TableMeta tableMeta = context.getTableMeta();
-        StringBuilder builder = new StringBuilder("<where>");
+        Element whereNode = createElement("where");
         tableMeta.getPrimaryKeyMap().keySet().stream()
-                .map(column -> getIfCondition(column, context, "and", ""))
-                .forEach(builder::append);
-        builder.append("</where>");
-        return builder.toString();
+                .map(column -> getIfConditionNode(column, context, "and", ""))
+                .forEach(whereNode::add);
+        element.add(whereNode);
     }
 
-    protected String getColumns(SqlContext context, Element element) {
+    protected void addColumns(SqlContext context, Element element) {
         boolean useResultMap = containsNode(context, ResultMapProcessor.TYPE);
         boolean useInclude = containsProccessor(context, BaseColumnSqlProcessor.TYPE);
-        String columns = null;
+        Node columnsNode = null;
         TableMeta tableMeta = context.getTableMeta();
         Map<String, ColumnMeta> allColumns = tableMeta.getAllColumns();
         if (useResultMap) {
             element.addAttribute("resultMap", ResultMapProcessor.ID);
             if (useInclude) {
-                columns = getColumnsUseInclude(allColumns, context);
+                columnsNode = getColumnsUseInclude(allColumns, context);
             } else {
-                columns = getColumnsUseResultMap(allColumns, context);
+                columnsNode = getColumnsUseResultMap(allColumns, context);
             }
         } else {
             element.addAttribute("resultType", getFullEntityName(context));
-            columns = getColumnsUnuseResultMap(allColumns, context);
+            columnsNode = getColumnsUnuseResultMap(allColumns, context);
         }
-        return columns;
+        element.add(columnsNode);
     }
 
-    protected String getColumnsUseInclude(Map<String, ColumnMeta> allColumns, SqlContext context) {
-        return String.format("<include refid=\"%s\"></include>", BaseColumnSqlProcessor.ID);
+    protected Node getColumnsUseInclude(Map<String, ColumnMeta> allColumns, SqlContext context) {
+//        return String.format("<include refid=\"%s\"></include>", BaseColumnSqlProcessor.ID);
+        Element node = createElement("include");
+        node.addAttribute("refid", BaseColumnSqlProcessor.ID);
+        return node;
     }
 
-    protected String getColumnsUseResultMap(Map<String, ColumnMeta> allColumns, SqlContext context) {
+    protected Node getColumnsUseResultMap(Map<String, ColumnMeta> allColumns, SqlContext context) {
         StringBuilder builder = new StringBuilder();
         allColumns.keySet().stream()
-                .map(MysqlKeywordUtils::processKeyword)
                 .filter(Objects::nonNull)
+                .map(MysqlKeywordUtils::processKeyword)
                 .forEach(column -> builder.append(column).append(","));
         builder.deleteCharAt(builder.length() - 1);
-        return builder.toString();
+        return DocumentHelper.createText(builder.toString());
     }
 
-    protected String getColumnsUnuseResultMap(Map<String, ColumnMeta> allColumns, SqlContext context) {
+    protected Node getColumnsUnuseResultMap(Map<String, ColumnMeta> allColumns, SqlContext context) {
         String fields = allColumns.keySet().stream()
-                .map(MysqlKeywordUtils::processKeyword)
                 .map(column -> getColumnAsField(column, context))
                 .reduce((s1, s2) -> s1 + ", " + s2)
                 .orElse("");
-        return fields;
+        return DocumentHelper.createText(fields);
     }
 
     protected String getColumnAsField(String column, SqlContext context) {

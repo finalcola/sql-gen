@@ -56,31 +56,29 @@ public class UpdateProcessor extends AbstractNodeProcessor {
         Element element = createElement("update");
         element.addAttribute("id", getType());
         element.addAttribute("parameterType", getFullEntityName(parentContext));
-        String format = "\nupdate %s %s where %s";
-        String sql = String.format(format, MysqlKeywordUtils.processKeyword(getTableName(parentContext)), getSet(parentContext), getWhere(parentContext));
-        element.addText(sql);
+        element.addText("update " + MysqlKeywordUtils.processKeyword(getTableName(parentContext)) + " ");
+        element.add(getSet(parentContext));
+        element.addText(getWhere(parentContext));
         return element;
     }
 
-    protected String getSet(SqlContext sqlContext) {
+    protected Element getSet(SqlContext sqlContext) {
         TableMeta tableMeta = sqlContext.getTableMeta();
         Map<String, ColumnMeta> columnMap = tableMeta.getColumnsExcludePk();
-        StringBuilder builder = new StringBuilder("<set>");
+        Element setNode = createElement("set");
         columnMap.keySet().stream()
-                .map(column -> getIfCondition(column, sqlContext, ",", ""))
-                .forEach(builder::append);
-        builder.append("</set>");
-        return builder.toString();
+                .map(column -> getIfConditionNode(column, sqlContext, ",", ""))
+                .forEach(setNode::add);
+        return setNode;
     }
 
     protected String getWhere(SqlContext sqlContext) {
-        StringBuilder builder = new StringBuilder();
         List<String> primaryKeyList = sqlContext.getTableMeta().getPrimaryKeyOnlyName();
-        primaryKeyList.stream()
-                .map(MysqlKeywordUtils::processKeyword)
+        return primaryKeyList.stream()
                 .map(column -> getSimpleCondition(column, sqlContext, "", ""))
-                .forEach(builder::append);
-        return builder.toString();
+                .reduce((s1, s2) -> s1 + " and " + s2)
+                .map(s -> " where " + s)
+                .orElse("");
     }
 
     @Override

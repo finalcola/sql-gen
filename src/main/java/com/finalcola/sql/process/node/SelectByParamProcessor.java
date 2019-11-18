@@ -34,15 +34,14 @@ public class SelectByParamProcessor extends SelectByPrimaryKeyProcessor {
     }
 
     @Override
-    protected String getWhere(SqlContext context, Element element) {
+    protected void addWhere(SqlContext context, Element element) {
         TableMeta tableMeta = context.getTableMeta();
         Map<String, ColumnMeta> columnnMap = tableMeta.getColumnsExcludePk();
-        StringBuilder builder = new StringBuilder("<where>");
+        Element whereNode = createElement("where");
         columnnMap.keySet().stream()
-                .map(column -> getIfCondition(column, context, "and", ""))
-                .forEach(builder::append);
-        builder.append("</where>");
-        return builder.toString();
+                .map(column -> getIfConditionNode(column, context, "and", ""))
+                .forEach(whereNode::add);
+        element.add(whereNode);
     }
 
     @Override
