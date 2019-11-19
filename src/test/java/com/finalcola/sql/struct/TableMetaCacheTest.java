@@ -30,8 +30,8 @@ public class TableMetaCacheTest {
         Configuration configuration = new Configuration();
         configuration.setDriverClass("com.mysql.cj.jdbc.Driver")
                 .setJdbcUrl("jdbc:mysql://localhost:3306/seata_demo?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC")
-                .setUsername("root")
-                .setPassword("z845447141")
+                .setUsername("dbuser")
+                .setPassword("123456")
                 .setDir("tmp/gen")
                 .setPackageName("com.finalcola");
         SqlGen.generateSql(configuration);
