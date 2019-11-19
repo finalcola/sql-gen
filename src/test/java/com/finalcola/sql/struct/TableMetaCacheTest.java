@@ -1,6 +1,7 @@
 package com.finalcola.sql.struct;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.finalcola.sql.SqlGen;
 import com.finalcola.sql.config.Configuration;
 import com.finalcola.sql.process.NodeProcessorChain;
 import com.finalcola.sql.process.ContextManager;
@@ -33,8 +34,7 @@ public class TableMetaCacheTest {
                 .setPassword("z845447141")
                 .setDir("tmp/gen")
                 .setPackageName("com.finalcola");
-        ContextManager contextManager = new ContextManager(configuration);
-        contextManager.start();
+        SqlGen.generateSql(configuration);
     }
 
     private void printDom(Document document) {
