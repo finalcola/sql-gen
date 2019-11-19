@@ -23,7 +23,7 @@ import java.util.HashSet;
  * @author: yuanyou.
  * @date: 2019-11-11 20:38
  */
-public class TableMetaCacheTest {
+public class SqlGenTest {
 
     @Test
     public void genSql() throws SQLException {
