@@ -1,5 +1,6 @@
 package com.finalcola.sql.process.node;
 
+import com.finalcola.sql.anno.ServiceImpl;
 import com.finalcola.sql.config.Configuration;
 import com.finalcola.sql.process.AbstractNodeProcessor;
 import com.finalcola.sql.process.SqlContext;
@@ -17,6 +18,7 @@ import java.util.Map;
  * @date: 2019-11-12 18:03
  */
 @EqualsAndHashCode(callSuper = false)
+@ServiceImpl(name = "insert")
 public class InsertProcessor extends AbstractNodeProcessor {
     @Override
     public String getType() {

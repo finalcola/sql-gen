@@ -1,5 +1,6 @@
 package com.finalcola.sql.process.node;
 
+import com.finalcola.sql.anno.ServiceImpl;
 import com.finalcola.sql.config.Configuration;
 import com.finalcola.sql.process.SqlContext;
 import com.finalcola.sql.struct.*;
@@ -16,6 +17,7 @@ import java.util.Map;
  * @date: 2019-11-12 19:25
  */
 @EqualsAndHashCode(callSuper = false)
+@ServiceImpl(name = "insertBatch")
 public class InsertBatchProcessor extends InsertProcessor {
     @Override
     public String getType() {

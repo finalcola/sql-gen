@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -73,6 +72,7 @@ public class ServiceLoader<T> {
                     instance = INSTANCES.get(entry.getValue());
                     if (instance == null) {
                         try {
+                            // TODO: 2019-11-19 处理有参构造器的情况
                             instance = entry.getValue().newInstance();
                             INSTANCES.put(entry.getValue(), instance);
                         } catch (Exception e) {
@@ -151,11 +151,6 @@ public class ServiceLoader<T> {
             name = line.substring(0, splitIndex).trim();
         } else {
             impl = line;
-            name = loadNameByAnnotation();
-            if (StringUtils.isBlank(name)) {
-                log.error("SPI 配置异常，存在实现类未配置名称:{}", impl);
-                return;
-            }
         }
         if (impl.isEmpty()) {
             log.error("SPI 配置异常，实现类不能配置为空 ==> name:{},impl:{}", name, impl);
@@ -163,6 +158,13 @@ public class ServiceLoader<T> {
         }
         try {
             Class<?> implClass = Class.forName(impl);
+            if (StringUtils.isBlank(name)) {
+                name = loadNameByAnnotation(implClass);
+                if (StringUtils.isBlank(name)) {
+                    log.error("SPI 配置异常，存在实现类未配置名称:{}", impl);
+                    return;
+                }
+            }
             if (extensionClasses.get(name) != null) {
                 log.error("SPI 配置异常，同一名称对应的实现类重复 ==> name:{},impl:{}", name, impl);
             } else {
@@ -174,8 +176,8 @@ public class ServiceLoader<T> {
         }
     }
 
-    private String loadNameByAnnotation() {
-        ServiceImpl annotation = type.getDeclaredAnnotation(ServiceImpl.class);
+    private String loadNameByAnnotation(Class<?> klass) {
+        ServiceImpl annotation = klass.getDeclaredAnnotation(ServiceImpl.class);
         if (annotation == null) {
             return null;
         }

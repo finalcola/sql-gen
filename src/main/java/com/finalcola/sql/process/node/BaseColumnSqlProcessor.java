@@ -1,5 +1,6 @@
 package com.finalcola.sql.process.node;
 
+import com.finalcola.sql.anno.ServiceImpl;
 import com.finalcola.sql.process.AbstractNodeProcessor;
 import com.finalcola.sql.process.SqlContext;
 import com.finalcola.sql.struct.ColumnMeta;
@@ -16,6 +17,7 @@ import java.util.Map;
  * @date: 2019-11-12 17:41
  */
 @EqualsAndHashCode(callSuper = false)
+@ServiceImpl(name = "baseColumn")
 public class BaseColumnSqlProcessor extends AbstractNodeProcessor {
     /**
      * TYPE

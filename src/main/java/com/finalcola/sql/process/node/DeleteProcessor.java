@@ -1,5 +1,6 @@
 package com.finalcola.sql.process.node;
 
+import com.finalcola.sql.anno.ServiceImpl;
 import com.finalcola.sql.process.AbstractNodeProcessor;
 import com.finalcola.sql.process.SqlContext;
 import com.finalcola.sql.struct.*;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
  * @date: 2019-11-12 19:51
  */
 @EqualsAndHashCode(callSuper = false)
+@ServiceImpl(name = "delete")
 public class DeleteProcessor extends AbstractNodeProcessor {
     @Override
     public String getType() {

@@ -23,7 +23,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false)
-public abstract class AbstractNodeProcessor extends AbstractProcessor {
+public abstract class AbstractNodeProcessor extends AbstractProcessor implements NodeProcessor {
 
     @Override
     public void handle(SqlContext sqlContext) {

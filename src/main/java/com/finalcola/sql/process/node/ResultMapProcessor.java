@@ -1,5 +1,6 @@
 package com.finalcola.sql.process.node;
 
+import com.finalcola.sql.anno.ServiceImpl;
 import com.finalcola.sql.process.AbstractNodeProcessor;
 import com.finalcola.sql.process.SqlContext;
 import com.finalcola.sql.struct.ColumnMeta;
@@ -14,6 +15,7 @@ import java.util.Map;
  * @date: 2019-11-12 14:57
  */
 @EqualsAndHashCode(callSuper = false)
+@ServiceImpl(name = "resultMap")
 public class ResultMapProcessor extends AbstractNodeProcessor {
     /**
      * TYPE

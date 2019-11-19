@@ -1,5 +1,6 @@
 package com.finalcola.sql.process.node;
 
+import com.finalcola.sql.anno.ServiceImpl;
 import com.finalcola.sql.process.SqlContext;
 import com.finalcola.sql.struct.*;
 import com.finalcola.sql.util.StringUtils;
@@ -15,6 +16,7 @@ import java.util.Map;
  * @date: 2019-11-13 17:23
  */
 @EqualsAndHashCode(callSuper = true)
+@ServiceImpl(name = "selectByParam")
 public class SelectByParamProcessor extends SelectByPrimaryKeyProcessor {
 
     @Override

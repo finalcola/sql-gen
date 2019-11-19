@@ -1,0 +1,8 @@
+com.finalcola.sql.process.node.ResultMapProcessor
+com.finalcola.sql.process.node.BaseColumnSqlProcessor
+com.finalcola.sql.process.node.InsertProcessor
+com.finalcola.sql.process.node.InsertBatchProcessor
+com.finalcola.sql.process.node.DeleteProcessor
+com.finalcola.sql.process.node.SelectByPrimaryKeyProcessor
+com.finalcola.sql.process.node.SelectByParamProcessor
+com.finalcola.sql.process.node.UpdateProcessor
