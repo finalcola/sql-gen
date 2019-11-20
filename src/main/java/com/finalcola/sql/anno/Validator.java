@@ -1,15 +1,16 @@
 package com.finalcola.sql.anno;
 
-import com.finalcola.sql.config.Configuration;
 import com.finalcola.sql.util.StringUtils;
-import com.sun.tools.javac.comp.Check;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Stream;

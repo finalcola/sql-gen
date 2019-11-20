@@ -8,7 +8,7 @@ import com.finalcola.sql.util.StringUtils;
  * @author: yuanyou.
  * @date: 2019-11-13 18:47
  */
-public abstract class AbstractProcessor implements Processor,Order {
+public abstract class AbstractProcessor implements Processor {
 
     public abstract String getType();
 
