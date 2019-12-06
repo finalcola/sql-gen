@@ -67,7 +67,7 @@ public class InsertBatchProcessor extends InsertProcessor {
         subNode.addAttribute("collection", "list");
         subNode.addAttribute("item", "item");
         subNode.addAttribute("separator", ",");
-        subNode.addText("(#{item})");
+        subNode.addText(paramsBuilder.toString());
 
         element.add(subNode);
     }
