@@ -1,5 +1,6 @@
 package com.finalcola.sql.struct;
 
+import com.finalcola.sql.util.MysqlTypeMap;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -7,6 +8,7 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
@@ -157,8 +159,9 @@ public class TableMetaCache {
     }
 
     private static Map<String, ColumnMeta> sortColumns(Map<String, ColumnMeta> allColumns, Map<String, IndexMeta> allIndexes) {
-        HashMap<String, ColumnMeta> primaryKeys = new HashMap<>(allColumns.size() / 2);
-        HashMap<String, ColumnMeta> simpleColumns = new HashMap<>(allColumns.size());
+        Map<String, ColumnMeta> primaryKeys = new HashMap<>(allColumns.size() / 2);
+        Map<String, ColumnMeta> simpleColumns = new TreeMap<>(String::compareTo);
+        Map<String, ColumnMeta> dateColumns = new HashMap<>(4);
         for (IndexMeta indexMeta : allIndexes.values()) {
             if (IndexType.PRIMARY.equals(indexMeta.getIndextype())) {
                 for (ColumnMeta columnMeta : indexMeta.getValues()) {
@@ -171,12 +174,17 @@ public class TableMetaCache {
             if (primaryKeys.containsKey(entry.getKey())) {
                 continue;
             }
-            simpleColumns.put(entry.getKey(), entry.getValue());
+            if ("Date".equalsIgnoreCase(MysqlTypeMap.getJavaType(entry.getValue().getDataTypeName()))) {
+                dateColumns.put(entry.getKey(), entry.getValue());
+            } else {
+                simpleColumns.put(entry.getKey(), entry.getValue());
+            }
         }
 
         Map<String, ColumnMeta> result = new LinkedHashMap<>(allColumns.size(), 1.0F);
         result.putAll(primaryKeys);
         result.putAll(simpleColumns);
+        result.putAll(dateColumns);
         return result;
     }
 

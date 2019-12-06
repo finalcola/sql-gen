@@ -14,7 +14,6 @@ import java.util.*;
 @ToString
 public class TableMeta {
     private String tableName;
-    // TODO: 2019-11-15 字段顺序
     private Map<String, ColumnMeta> allColumns = new LinkedHashMap<>();
     private Map<String, IndexMeta> allIndexes = new HashMap<String, IndexMeta>();
 

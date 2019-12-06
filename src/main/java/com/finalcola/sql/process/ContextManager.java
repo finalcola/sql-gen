@@ -106,6 +106,7 @@ public class ContextManager {
         chain.addProcessor(new DeleteProcessor());
         chain.addProcessor(new SelectByPrimaryKeyProcessor());
         chain.addProcessor(new SelectByParamProcessor());
+        chain.addProcessor(new SelectCountByParamProcessor());
         chain.addProcessor(new UpdateProcessor());
 
         chain.addProcessor(new EntityClassProcessor());
