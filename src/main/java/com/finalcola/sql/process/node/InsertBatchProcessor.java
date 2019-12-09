@@ -59,8 +59,8 @@ public class InsertBatchProcessor extends InsertProcessor {
         deleteLastChar(fieldsBuilder);
         deleteLastChar(paramsBuilder);
 
-        String sqlFormat = "insert into (%s) %s values ";
-        element.addText(String.format(sqlFormat, fieldsBuilder.toString(), tableName));
+        String sqlFormat = "insert into %s(%s) %s values ";
+        element.addText(String.format(sqlFormat, tableName, fieldsBuilder.toString(), tableName));
 
         // <foreach collection="list" item="item" separator=",">(#{item)</foreach>
         Element subNode = createElement("foreach");

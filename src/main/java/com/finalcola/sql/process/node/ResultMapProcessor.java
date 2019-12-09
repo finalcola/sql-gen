@@ -67,7 +67,7 @@ public class ResultMapProcessor extends AbstractNodeProcessor {
             Element subElement = element.addElement(subElementName);
             subElement.addAttribute("column", columnName);
             subElement.addAttribute("property", fieldName);
-            subElement.addAttribute("jdbcType", dataTypeName);
+//            subElement.addAttribute("jdbcType", dataTypeName);
         }
         return element;
     }
