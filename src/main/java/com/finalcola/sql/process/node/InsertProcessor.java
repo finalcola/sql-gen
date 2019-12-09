@@ -86,8 +86,8 @@ public class InsertProcessor extends AbstractNodeProcessor {
         deleteLastChar(fieldsBuilder);
         deleteLastChar(paramsBuilder);
 
-        String sqlFormat = "insert into %s(%s) %s values (%s)";
-        String sql = String.format(sqlFormat, tableName, fieldsBuilder.toString(), tableName, paramsBuilder.toString());
+        String sqlFormat = "insert into %s(%s) values (%s)";
+        String sql = String.format(sqlFormat, tableName, fieldsBuilder.toString(), paramsBuilder.toString());
         element.addText(sql);
     }
 

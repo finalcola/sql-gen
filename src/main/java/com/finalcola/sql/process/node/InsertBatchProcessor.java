@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import org.dom4j.Element;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -42,10 +43,12 @@ public class InsertBatchProcessor extends InsertProcessor {
 
         StringBuilder fieldsBuilder = new StringBuilder();
         StringBuilder paramsBuilder = new StringBuilder();
+        HashSet<String> autoIncFields = new HashSet<>();
         for (Map.Entry<String, ColumnMeta> entry : primaryKeyMap.entrySet()) {
             String primaryKeyName = entry.getKey();
             ColumnMeta columnMeta = entry.getValue();
             if ("YES".equalsIgnoreCase(columnMeta.getIsAutoincrement())) {
+                autoIncFields.add(primaryKeyName);
                 continue;
             }
             fieldsBuilder.append(MysqlKeywordUtils.processKeyword(primaryKeyName)).append(",");
@@ -53,20 +56,25 @@ public class InsertBatchProcessor extends InsertProcessor {
         }
         for (Map.Entry<String, ColumnMeta> entry : allColumns.entrySet()) {
             String column = entry.getKey();
+            if (autoIncFields.contains(column)) {
+                continue;
+            }
             fieldsBuilder.append(MysqlKeywordUtils.processKeyword(column)).append(",");
             paramsBuilder.append("#{item.").append(columnToCamel(column, configuration)).append("},");
         }
         deleteLastChar(fieldsBuilder);
         deleteLastChar(paramsBuilder);
 
-        String sqlFormat = "insert into %s(%s) %s values ";
-        element.addText(String.format(sqlFormat, tableName, fieldsBuilder.toString(), tableName));
+        String sqlFormat = "insert into %s(%s) values ";
+        element.addText(String.format(sqlFormat, tableName, fieldsBuilder.toString()));
 
         // <foreach collection="list" item="item" separator=",">(#{item)</foreach>
         Element subNode = createElement("foreach");
         subNode.addAttribute("collection", "list");
         subNode.addAttribute("item", "item");
         subNode.addAttribute("separator", ",");
+        subNode.addAttribute("open", "(");
+        subNode.addAttribute("close", ")");
         subNode.addText(paramsBuilder.toString());
 
         element.add(subNode);
