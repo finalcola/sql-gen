@@ -37,16 +37,17 @@ public class SelectCountByParamProcessor extends SelectByParamProcessor {
     @Override
     protected void addColumns(SqlContext context, Element element) {
         boolean useResultMap = containsNode(context, ResultMapProcessor.TYPE);
-        if (useResultMap) {
-            element.addAttribute("resultMap", ResultMapProcessor.ID);
-        } else {
-            element.addAttribute("resultType", getFullEntityName(context));
-        }
+        element.addAttribute("resultType", "Integer");
         element.addText("count(*)");
     }
 
     @Override
     protected String getMethodDoc() {
         return "根据参数查询总数";
+    }
+
+    @Override
+    protected String getReturnType(SqlContext context) {
+        return "Integer";
     }
 }

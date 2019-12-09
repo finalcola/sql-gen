@@ -52,6 +52,11 @@ public class SelectByParamProcessor extends SelectByPrimaryKeyProcessor {
     }
 
     @Override
+    protected String getReturnType(SqlContext context) {
+        return "List<" + getFullEntityName(context) + ">";
+    }
+
+    @Override
     protected List<ParamInfo> getParamInfos(ClassInfo mapperClassInfo, SqlContext sqlContext) {
         mapperClassInfo.getImports().add(getFullEntityName(sqlContext));
         ParamInfo paramInfo = new ParamInfo();

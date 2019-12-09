@@ -29,7 +29,7 @@ public class SqlGenTest {
     public void genSql() throws SQLException {
         Configuration configuration = new Configuration();
         configuration.setDriverClass("com.mysql.cj.jdbc.Driver")
-                .setJdbcUrl("jdbc:mysql://localhost:3306/seata_demo?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC")
+                .setJdbcUrl("jdbc:mysql://localhost:3306/fbasic?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC")
                 .setUsername("dbuser")
                 .setPassword("123456")
                 .setDir("tmp/gen")

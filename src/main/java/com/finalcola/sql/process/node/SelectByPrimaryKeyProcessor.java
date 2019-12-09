@@ -133,14 +133,19 @@ public class SelectByPrimaryKeyProcessor extends AbstractNodeProcessor {
         MethodInfo methodInfo = new MethodInfo();
         methodInfo.setName(getType());
         methodInfo.setDoc(getMethodDoc());
+        mapperClassInfo.getImports().add("java.util.List");
         mapperClassInfo.getImports().add(getFullEntityName(sqlContext));
-        methodInfo.setReturnType(getEntityName(sqlContext));
+        methodInfo.setReturnType(getReturnType(sqlContext));
         methodInfo.getParamInfos().addAll(getParamInfos(mapperClassInfo, sqlContext));
         methodInfo.setIsGeneric(false);
         methodInfo.setAccessor("public");
         methodInfo.setIsAbstract(false);
         methodInfo.setIsInterface(true);
         mapperClassInfo.getMethodInfos().add(methodInfo);
+    }
+
+    protected String getReturnType(SqlContext context) {
+        return getEntityName(context);
     }
 
     protected String getMethodDoc() {
