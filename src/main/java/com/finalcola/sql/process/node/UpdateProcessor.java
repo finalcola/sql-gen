@@ -69,7 +69,7 @@ public class UpdateProcessor extends AbstractNodeProcessor {
         Map<String, ColumnMeta> columnMap = tableMeta.getColumnsExcludePk();
         Element setNode = createElement("set");
         columnMap.keySet().stream()
-                .map(column -> getIfConditionNode(column, sqlContext, ",", ""))
+                .map(column -> getIfConditionNode(column, sqlContext, "", ","))
                 .forEach(setNode::add);
         return setNode;
     }
